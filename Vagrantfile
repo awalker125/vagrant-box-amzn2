@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
   # config.vbguest.installer_options = { allow_kernel_upgrade: true }
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "amzn2-0.0.1"
+  config.vm.box = "amzn2-1.0.0"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
