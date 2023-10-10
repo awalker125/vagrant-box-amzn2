@@ -1,0 +1,52 @@
+{
+    "variables": {
+        "name": "amzn2",
+        "version": "1.0.0"
+    },
+    "builders": [
+        {
+            "type": "virtualbox-ovf",
+            "source_path": "output-ovf/amzn2-virtualbox-2.0.20230926.0-x86_64.xfs.gpt.ovf",
+            "ssh_username": "ec2-user",
+            "ssh_password": "packer",
+            "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
+            "cd_files": [
+                "./seedconfig/meta-data",
+                "./seedconfig/user-data"
+            ],
+            "cd_label": "cidata"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "scripts": [
+                "./setup.sh"
+            ],
+            "execute_command": "echo 'packer' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'",
+            "expect_disconnect": "true"
+        },
+        {
+            "type": "shell",
+            "scripts": [
+                "./guest_additions.sh",
+                "./cleanup.sh"
+            ],
+            "execute_command": "echo 'packer' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'"
+        }
+    ],
+    "post-processors": [
+        {
+            "keep_input_artifact": false,
+            "output": "{{user `name`}}-{{user `version`}}.box",
+            "type": "vagrant",
+            "compression_level": "0"
+        },
+        {
+            "type": "shell-local",
+            "inline": [
+                "vagrant box add {{user `name`}}-{{user `version`}}.box --name {{user `name`}}-{{user `version`}} --force"
+            ]
+        }
+    ]
+}
